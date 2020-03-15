@@ -20,6 +20,20 @@
  */
 
 #include "JNIBase.h"
+#include "Enum.h"
+
+class CJNIBitmapConfig : public CJNIEnum
+{
+public:
+    CJNIBitmapConfig(const jni::jhobject &object) : CJNIEnum(object) {}
+    ~CJNIBitmapConfig() {}
+
+    static CJNIBitmapConfig valueOf(const std::string& name);
+private:
+    CJNIBitmapConfig();
+    static const char *m_classname;
+};
+
 
 class CJNIBitmap : public CJNIBase
 {
@@ -27,4 +41,8 @@ public:
   CJNIBitmap() : CJNIBase() {}
   CJNIBitmap(const jni::jhobject &object) : CJNIBase(object) {}
   ~CJNIBitmap() {}
+
+  static CJNIBitmap createBitmap(int width, int height, const CJNIBitmapConfig &config);
+private:
+    static const char *m_classname;
 };
