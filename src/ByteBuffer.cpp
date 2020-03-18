@@ -199,3 +199,115 @@ int CJNIByteBuffer::compareTo(const CJNIObject &otherBuffer)
 {
 }
 */
+/**
+ * 
+ * from : https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#NewDirectByteBuffer
+ *
+ * NewDirectByteBuffer
+ * jobject NewDirectByteBuffer(JNIEnv* env, void* address, jlong capacity);
+ * 
+ * Allocates and returns a direct java.nio.ByteBuffer referring to the block of memory 
+ * starting at the memory address address and extending capacity bytes.
+ * 
+ * Native code that calls this function and returns the resulting byte-buffer object to Java-level 
+ * code should ensure that the buffer refers to a valid region of memory that is accessible for reading and, 
+ * if appropriate, writing. An attempt to access an invalid memory location from Java code will either 
+ * return an arbitrary value, have no visible effect, or cause an unspecified exception to be thrown.
+ * 
+ * LINKAGE:
+ * Index 229 in the JNIEnv interface function table.
+ * 
+ * PARAMETERS:
+ * env: the JNIEnv interface pointer
+ * 
+ * address: the starting address of the memory region (must not be NULL)
+ * 
+ * capacity: the size in bytes of the memory region (must be positive)
+ * 
+ * RETURNS:
+ * Returns a local reference to the newly-instantiated java.nio.ByteBuffer object. 
+ * Returns NULL if an exception occurs, or if JNI access to direct buffers is not supported by this virtual machine.
+ * 
+ * EXCEPTIONS:
+ * OutOfMemoryError: if allocation of the ByteBuffer object fails
+ * 
+ * SINCE:
+ * JDK/JRE 1.4
+ * 
+ * ex:
+ * memory of address will not release after CJNIByteBuffer destruct.
+ * 
+ * */
+// jobject     (*NewDirectByteBuffer)(JNIEnv*, void*, jlong);
+CJNIByteBuffer CJNIByteBuffer::newDirectByteBuffer(void*address, long capacity) {
+    JNIEnv *env = xbmc_jnienv();
+    return CJNIByteBuffer(jholder<jobject>(env->NewDirectByteBuffer(address, capacity)));
+}
+
+/**
+ * 
+ * from : https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#GetDirectBufferAddress
+ * 
+ * GetDirectBufferAddress
+ * void* GetDirectBufferAddress(JNIEnv* env, jobject buf);
+ * 
+ * Fetches and returns the starting address of the memory region referenced by the given direct java.nio.Buffer.
+ * 
+ * This function allows native code to access the same memory region that is accessible to Java code via the buffer object.
+ * 
+ * LINKAGE:
+ * Index 230 in the JNIEnv interface function table.
+ * 
+ * PARAMETERS:
+ * env: the JNIEnv interface pointer
+ * 
+ * buf: a direct java.nio.Buffer object (must not be NULL)
+ * 
+ * RETURNS:
+ * Returns the starting address of the memory region referenced by the buffer. 
+ * Returns NULL if the memory region is undefined, if the given object is not a direct java.nio.Buffer, 
+ * or if JNI access to direct buffers is not supported by this virtual machine.
+ * 
+ * SINCE:
+ * JDK/JRE 1.4
+*/
+void* CJNIByteBuffer::getDirectBufferAddress() {
+  JNIEnv *env = xbmc_jnienv();
+    if(!m_object) {
+        return nullptr;
+    }
+    return env->GetDirectBufferAddress(m_object.get());
+}
+
+/**
+ * from : https://docs.oracle.com/javase/8/docs/technotes/guides/jni/spec/functions.html#GetDirectBufferCapacity
+ * jlong GetDirectBufferCapacity(JNIEnv* env, jobject buf);
+ * 
+ * Fetches and returns the capacity of the memory region referenced by the given direct java.nio.Buffer. 
+ * The capacity is the number of elements that the memory region contains.
+ * 
+ * LINKAGE:
+ * Index 231 in the JNIEnv interface function table.
+ * 
+ * PARAMETERS:
+ * env: the JNIEnv interface pointer
+ * 
+ * buf: a direct java.nio.Buffer object (must not be NULL)
+ * 
+ * RETURNS:
+ * Returns the capacity of the memory region associated with the buffer. 
+ * Returns -1 if the given object is not a direct java.nio.Buffer, 
+ * if the object is an unaligned view buffer and the processor architecture does not support unaligned access, 
+ * or if JNI access to direct buffers is not supported by this virtual machine.
+ * 
+ * SINCE:
+ * JDK/JRE 1.4
+*/
+long CJNIByteBuffer::getDirectBufferCapacity() {
+    JNIEnv *env = xbmc_jnienv();
+    if(!m_object) {
+        return -1;
+    }
+    return env->GetDirectBufferCapacity(m_object.get());
+}
+

@@ -56,7 +56,9 @@ public:
   //CJNIByteBuffer  order(const CJNIByteOrder &byteOrder);
   //CJNIObject      array();
   //int             compareTo(const CJNIObject &otherBuffer);
-
+  void             *getDirectBufferAddress();
+  long              getDirectBufferCapacity();
+  static CJNIByteBuffer    newDirectByteBuffer(void*address, long capacity);
 private:
   static const char *m_classname;
 };
